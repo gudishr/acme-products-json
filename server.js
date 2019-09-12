@@ -5,11 +5,13 @@ const dataLayer = db('products.json', () => {})
 
 const app = express()
 
-app.get('/', (req, res, next) => {
+app.use(express.json());
+
+app.get('/', (req, res, next)=> {
   res.sendFile(path.join(__dirname, 'index.html'))
 })
 
-app.get('/api/products', async (req, res, next) => {
+app.get('/api/products', async (req, res, next)=> {
   try {
     const products = await dataLayer.findAll()
     res.send(products)
@@ -17,7 +19,17 @@ app.get('/api/products', async (req, res, next) => {
   catch(ex){
     next(ex)
   }
-})
+});
+
+app.post('/api/products', async (req, res, next)=> {
+  try{
+    res.send(await dataLayer.create(req.body))
+
+  }
+  catch(ex){
+    next(ex)
+  }
+});
 
 app.delete('/api/products/:id', async (req, res, next)=> {
   try{
